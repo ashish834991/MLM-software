@@ -32,36 +32,40 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
-        Paginator::useBootstrapFour();
+{
+    Paginator::useBootstrapFour();
 
-        try {
-
-            if (!\Schema::hasTable('general_settings') || !\Schema::hasTable('languages')) {
-                return;
-            }
-
-            $general = gs();
-            $activeTemplate = activeTemplate();
-
-            $viewShare['general'] = $general;
-            $viewShare['activeTemplate'] = $activeTemplate;
-            $viewShare['activeTemplateTrue'] = activeTemplate(true);
-            $viewShare['language'] = Language::all();
-            $viewShare['emptyMessage'] = 'Data not found';
-
-            $viewShare['pages'] = Page::where('tempname', $activeTemplate)
-                ->where('is_default', Status::NO)
-                ->get();
-
-            view()->share($viewShare);
-
-            if ($general->force_ssl) {
-                \URL::forceScheme('https');
-            }
-
-        } catch (\Exception $e) {
-
-        }
+    if (app()->runningInConsole()) {
+        return;
     }
+
+    try {
+
+        if (!\Schema::hasTable('general_settings') || !\Schema::hasTable('languages')) {
+            return;
+        }
+
+        $general = gs();
+        $activeTemplate = activeTemplate();
+
+        $viewShare['general'] = $general;
+        $viewShare['activeTemplate'] = $activeTemplate;
+        $viewShare['activeTemplateTrue'] = activeTemplate(true);
+        $viewShare['language'] = Language::all();
+        $viewShare['emptyMessage'] = 'Data not found';
+
+        $viewShare['pages'] = Page::where('tempname', $activeTemplate)
+            ->where('is_default', Status::NO)
+            ->get();
+
+        view()->share($viewShare);
+
+        if ($general->force_ssl) {
+            \URL::forceScheme('https');
+        }
+
+    } catch (\Exception $e) {
+
+    }
+ }
 }
