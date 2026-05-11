@@ -1,33 +1,41 @@
 FROM php:8.2-cli
 
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
-    unzip \
     git \
     curl \
-    libzip-dev \
+    unzip \
     zip \
     libpng-dev \
     libonig-dev \
-    libxml2-dev \
-    default-mysql-client
+    libxml2-dev
 
-RUN docker-php-ext-install pdo pdo_mysql zip
+# Install PHP extensions
+RUN docker-php-ext-install \
+    pdo \
+    pdo_mysql \
+    mbstring \
+    exif \
+    pcntl \
+    bcmath
 
+# Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
+# Set working directory
 WORKDIR /app
 
+# Copy project files
 COPY . .
 
-ENV APP_ENV=production
-ENV APP_DEBUG=false
-
+# Install Laravel dependencies
 RUN composer install --no-dev --optimize-autoloader --no-scripts
 
-RUN php artisan config:clear || true
-RUN php artisan cache:clear || true
-RUN php artisan optimize:clear || true
+# Laravel permissions
+RUN chmod -R 775 storage bootstrap/cache
 
+# Expose Render port
 EXPOSE 10000
 
-CMD ["php", "-S", "0.0.0.0:10000", "-t", "public"]
+# Start Laravel server
+CMD php artisan serve --host=0.0.0.0 --port=10000
