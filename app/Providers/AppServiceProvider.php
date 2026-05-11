@@ -32,40 +32,54 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-{
-    Paginator::useBootstrapFour();
+    {
+        // Fix REQUEST_SCHEME issue on Render
+        if (!isset($_SERVER['REQUEST_SCHEME'])) {
+            $_SERVER['REQUEST_SCHEME'] = 'https';
+        }
 
-    if (app()->runningInConsole()) {
-        return;
-    }
+        Paginator::useBootstrapFour();
 
-    try {
-
-        if (!\Schema::hasTable('general_settings') || !\Schema::hasTable('languages')) {
+        // Prevent DB access during build/composer commands
+        if (app()->runningInConsole()) {
             return;
         }
 
-        $general = gs();
-        $activeTemplate = activeTemplate();
+        try {
 
-        $viewShare['general'] = $general;
-        $viewShare['activeTemplate'] = $activeTemplate;
-        $viewShare['activeTemplateTrue'] = activeTemplate(true);
-        $viewShare['language'] = Language::all();
-        $viewShare['emptyMessage'] = 'Data not found';
+            if (
+                !\Schema::hasTable('general_settings') ||
+                !\Schema::hasTable('languages')
+            ) {
+                return;
+            }
 
-        $viewShare['pages'] = Page::where('tempname', $activeTemplate)
-            ->where('is_default', Status::NO)
-            ->get();
+            $general = gs();
+            $activeTemplate = activeTemplate();
 
-        view()->share($viewShare);
+            $viewShare = [];
 
-        if ($general->force_ssl) {
-            \URL::forceScheme('https');
+            $viewShare['general'] = $general;
+            $viewShare['activeTemplate'] = $activeTemplate;
+            $viewShare['activeTemplateTrue'] = activeTemplate(true);
+            $viewShare['language'] = Language::all();
+            $viewShare['emptyMessage'] = 'Data not found';
+
+            $viewShare['pages'] = Page::where('tempname', $activeTemplate)
+                ->where('is_default', Status::NO)
+                ->get();
+
+            view()->share($viewShare);
+
+            if (!empty($general->force_ssl)) {
+                \URL::forceScheme('https');
+            }
+
+        } catch (\Exception $e) {
+
+            // Optional logging
+            // \Log::error($e->getMessage());
+
         }
-
-    } catch (\Exception $e) {
-
     }
- }
 }
