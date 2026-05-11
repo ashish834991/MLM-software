@@ -427,12 +427,13 @@ function dateSorting($arr)
 
 function gs()
 {
-    $general = Cache::get('GeneralSetting');
-    if (!$general) {
-        $general = GeneralSetting::first();
-        Cache::put('GeneralSetting', $general);
+    if (!\Schema::hasTable('general_settings')) {
+        return (object)[
+            'force_ssl' => false
+        ];
     }
-    return $general;
+
+    return \App\Models\GeneralSetting::first();
 }
 
 function mlmPositions()
