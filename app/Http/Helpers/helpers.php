@@ -427,13 +427,13 @@ function dateSorting($arr)
 
 function gs()
 {
-    if (!\Schema::hasTable('general_settings')) {
-        return (object)[
-            'force_ssl' => false
-        ];
-    }
-
-    return \App\Models\GeneralSetting::first();
+    return (object)[
+        'force_ssl' => false,
+        'active_template' => 'basic',
+        'site_name' => 'MLM',
+        'cur_text' => 'USD',
+        'cur_sym' => '$'
+    ];
 }
 
 function mlmPositions()
