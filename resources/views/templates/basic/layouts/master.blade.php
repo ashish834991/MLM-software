@@ -8,9 +8,9 @@
     <title> {{ $general->siteName(__($pageTitle)) }}</title>
     @include('partials.seo')
     <!-- Bootstrap CSS -->
-    <link href="{{ asset('assets/global/css/bootstrap.min.css') }}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <link href="{{ asset('assets/global/css/all.min.css') }}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <link href="{{ asset('assets/global/css/line-awesome.min.css') }}" rel="stylesheet" />
 
@@ -57,8 +57,8 @@
     </div>
 
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="{{ asset('assets/global/js/jquery-3.6.0.min.js') }}"></script>
-    <script src="{{ asset('assets/global/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Pluglin Link -->
     <script src="{{ asset($activeTemplateTrue . 'users/js/lib/slick.min.js') }}"></script>
